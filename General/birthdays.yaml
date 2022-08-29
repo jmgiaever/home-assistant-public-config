@@ -84,7 +84,7 @@ automation:
                     100 + now().strftime('%y')|int - born if born <= 100 else
                     now().strftime('%Y')|int - born|int
                   }}
-                data:
+                data: # Setup the notify data
                   title: "It is {{ name }}'s birthday. 🎁"
                   message: >-
                     {% if age is not false %}
