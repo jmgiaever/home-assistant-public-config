@@ -42,14 +42,18 @@ automation:
               {% set birthday.calendars = birthday.calendars + [ ical ] %}
             {% endfor %}
             {{ birthday.calendars }}
+          # Looks data in «Description» of the calendar
+          # Phone = phonenumber
+          # Born = birthyear
+          # Lang = language
           rexp_phone: '(?:(?<=phone)|(?<=\d,)):?\s?(\+?\d[ \d]+\d)'
           rexp_born: '.*?born:?\s*([\d]{2,4})'
           rexp_lang: '.*?lang:?\s*([a-zA-Z\_]+)'
           langs:
-            no_nb: '+47'
+            no_nb: '+47' # If no lang, check phone number and set `no_nb` as lang if necessary
           notify_devices: >-
             {{ state_attr('group.owners_notify_devices', 'entity_id')|list }}
-      - repeat:
+      - repeat: # Loop thorugh all the birthdays
           for_each: "{{ birthdays }}"
           sequence:
             - variables:
@@ -80,7 +84,6 @@ automation:
                     100 + now().strftime('%y')|int - born if born <= 100 else
                     now().strftime('%Y')|int - born|int
                   }}
-                index: "{{ repeat.index }}"
                 data:
                   title: "It is {{ name }}'s birthday. 🎁"
                   message: >-
@@ -104,7 +107,7 @@ automation:
                     icon_url: /local/icons/notifications/cake.png
                     notification_icon: "mdi:cake"
                   
-            - repeat:
+            - repeat: # Loop through all the devices that will be notified.
                 for_each: "{{ notify_devices }}"
                 sequence:
                   service: script.turn_on
@@ -113,9 +116,8 @@ automation:
                   data:
                     variables:
                       notify_device: "{{ repeat.item }}"
-                      index: "{{ index }}-{{ repeat.index }}"
-                      timeout:
-                        hours: 14
+                      timeout: # The script waits 10 hours to send from midnight
+                        hours: 14 # Remove the notification when the date turn
                       data: "{{ data }}"
                       action_scripts: # Callback handles for «data.actions»
                         SEND_SMS:
