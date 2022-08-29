@@ -1,0 +1,36 @@
+script:
+  notify_device:
+    alias: Notify device
+    fields:
+      notify_device:
+        name: "Device notify service"
+        description: "Device service, e.g notify.mobile_app_x"
+        selector:
+          object:
+      data:
+        name: Notification data
+        description: "Notification data, same as for notify-services"
+        selector:
+          object:
+      action_scripts:
+        name: Action scripts
+        description: >-
+          See blueprint
+        selector:
+          object:
+        default: {}
+      timeout:
+        name: "Timeout"
+        description: >-
+          Timeout before clearing event and stop waiting. 0 equals to never. 
+          Respects «Days» too in YAML mode.
+        selector:
+          duration:
+    max: 200
+    use_blueprint:
+      path: notify_user.yaml
+      input:
+        notify_device: "{{ notify_device }}"
+        timeout: "{{ timeout if timeout is defined else 0 }}"
+        data: "{{ data }}"
+        action_scripts: "{{ action_scripts if action_scripts is defined else {} }}"
