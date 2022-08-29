@@ -1,3 +1,4 @@
+# Require: https://github.com/remimikalsen/hacs_remiks_renovasjon
 remiks_renovasjon:
   streets: ["kirkegardsvegen-14"]
   following: ["Glass og metallemballasje"]
@@ -9,6 +10,7 @@ binary_sensor:
 sensor:
   - platform: remiks_renovasjon
 
+# Require: https://github.com/gadgetchnnel/entities_calendar
 calendar:
   - platform: entities_calendar
     calendars:
@@ -20,6 +22,7 @@ calendar:
               timestamp_attribute: start_time
             all_day: true
 
+# Require: https://github.com/jmgiaever/home-assistant-public-config/blob/master/General/notify_device.yaml
 automation:
   - id: "trash_collection_glass_metal"
     alias: "Trash collection: Glass and metal"
