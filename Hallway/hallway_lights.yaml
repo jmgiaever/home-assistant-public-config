@@ -1,0 +1,20 @@
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/motion_detected_lights.yaml
+automation:
+  - id: 'hallway_motion_active_lights'
+    alias: "Hallway: Motion active lights"
+    description: ''
+    use_blueprint:
+      path: motion_detected_lights.yaml
+      input:
+        trigger_sensors:
+          - binary_sensor.hallway_motion_sensor_home_security_motion_detection
+          - binary_sensor.hallway_stairway_motion_sensor_home_security_motion_detection
+        synced_lights:
+          - light.hallway_ceiling_lights
+        illuminance_sensors:
+          - sensor.hallway_motion_sensor_illuminance
+          - sensor.hallway_stairway_motion_sensor_illuminance
+        illuminance_threshold: 9
+        after_wait_actions:
+          wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
+        delay: 3

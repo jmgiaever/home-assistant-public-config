@@ -1,0 +1,15 @@
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/cast_lovelace_on_motion.yaml
+automation:
+  - id: 'master_bedroom_dashboard'
+    alias: "Master bedroom: Cast lovelace on motion detection"
+    description: ''
+    use_blueprint:
+      path: cast_lovelace_on_motion.yaml
+      input:
+        trigger_sensors:
+        - binary_sensor.master_bedroom_motion_sensor_home_security_motion_detection
+        media_devices:
+        - media_player.master_bedroom_left_display
+        - media_player.master_bedroom_right_display
+        dashboard_path: lovelace
+        dashboard_view: master-bedroom

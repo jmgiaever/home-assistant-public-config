@@ -1,0 +1,14 @@
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/motion_detected_lights.yaml
+automation:
+  - id: 'laundry_room_motion_active_lights'
+    alias: 'Laundry room: Motion active lights'
+    use_blueprint:
+      path: motion_detected_lights.yaml
+      input:
+        trigger_sensors:
+          - binary_sensor.laundry_room_motion_sensor_home_security_motion_detection
+        synced_lights:
+          - light.laundry_room_ceiling_light
+        after_wait_actions:
+          wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
+        delay: 3

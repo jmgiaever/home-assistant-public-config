@@ -1,0 +1,50 @@
+input_boolean:
+  kitchen_dashboard:
+    name: "Kitchen: Dashboard"
+  kitchen_trigger_dashboard:
+    name: "Kitchen: Trigger dashboard"
+
+template:
+  - trigger:
+      platform: state
+      entity_id: input_boolean.kitchen_trigger_dashboard
+      to:
+        - "on"
+        - "off"
+    binary_sensor:
+      - name: "Kitchen: Trigger dashboard"
+        state: "{{ true }}"
+        auto_off: 5
+
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/cast_lovelace_on_motion.yaml
+automation:
+  - id: 'kitchen_dashboard'
+    alias: "Kitchen: Cast lovelace on motion detection"
+    description: ''
+    use_blueprint:
+      path: cast_lovelace_on_motion.yaml
+      input:
+        trigger_sensors:
+        - binary_sensor.kitchen_trigger_dashboard
+        - binary_sensor.kitchen_motion_sensor_home_security_motion_detection
+        media_devices:
+        - media_player.kitchen_display
+        dashboard_path: lovelace
+        dashboard_view: "{{ 'kitchen' if is_state('input_boolean.kitchen_dashboard', 'on') else 'home' }}"
+
+  - id: "kitchen_dashboards_toggle"
+    alias: "Kitchen: Toggle dashboard"
+    trigger:
+      platform: state
+      entity_id: input_boolean.kitchen_dashboard
+      to:
+        - "on"
+        - "off"
+    action:
+      - service: media_player.turn_off
+        target:
+          entity_id: media_player.kitchen_display
+      - wait_template: "{{ is_state('media_player.kitchen_display', 'off') }}"
+      - service: input_boolean.toggle
+        target:
+          entity_id: input_boolean.kitchen_trigger_dashboard

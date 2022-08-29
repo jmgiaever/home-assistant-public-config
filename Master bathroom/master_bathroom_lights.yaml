@@ -1,0 +1,66 @@
+switch:
+  - platform: template
+    switches: 
+      master_bathroom_light_automation:
+        friendly_name: "Master bathroom: Light automation"
+        value_template: "{{ is_state('automation.master_bathroom_motion_active_lights', 'on') }}"
+        turn_on:
+          service: automation.turn_on
+          target:
+            entity_id: automation.master_bathroom_motion_active_lights
+        turn_off:
+          service: automation.turn_off
+          target:
+            entity_id: automation.master_bathroom_motion_active_lights
+        icon_template: >-
+          {% if is_state('automation.master_bathroom_motion_active_lights', 'on') %}
+            mdi:motion-sensor
+          {% else %}
+            mdi:motion-sensor-off
+          {% endif %}
+
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/motion_detected_lights.yaml
+automation:
+  - id: 'master_bathroom_motion_active_lights'
+    alias: "Master bathroom: Motion active lights"
+    use_blueprint:
+      path: motion_detected_lights.yaml
+      input:
+        trigger_sensors:
+          - binary_sensor.master_bathroom_motion_sensor_home_security_motion_detection
+        synced_lights:
+          - light.master_bathroom_ceiling_lights
+        after_wait_actions:
+          - wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
+          - if: "{{ not states('sensor.master_bathroom_humidity_change') in ['unavailable', 'unknown'] }}"
+            then:
+              wait_template: "{{ states('sensor.master_bathroom_humidity_change')|int < 0 }}"
+          - choose:
+            - conditions: >
+                {{ states('media_player.master_bathroom_speaker') in ['playing', 'paused', 'idle'] }}
+              sequence:
+                # Wait for media_player to stop before cutting lights
+                - wait_template: >-
+                    {{ is_state('media_player.master_bathroom_speaker', 'playing') }}
+                  timeout: 30
+                - choose:
+                  - conditions: >-
+                      {{ wait.completed }}
+                    sequence:
+                      - wait_for_trigger:
+                        - platform: state
+                          entity_id: media_player.master_bathroom_speaker
+                          to: "off"
+                          for: 30
+                        - platform: state
+                          entity_id: media_player.master_bathroom_speaker
+                          to: "unavailable"
+                          for: 30
+                        - platform: state
+                          entity_id: media_player.master_bathroom_speaker
+                          to: "paused"
+                          for: 60
+                        - platform: state
+                          entity_id: media_player.master_bathroom_speaker
+                          to: "idle"
+                          for: 60
