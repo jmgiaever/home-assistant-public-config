@@ -23,6 +23,7 @@ script:
               {%- endif -%}
 
 # Require: https://github.com/jmgiaever/home-assistant-public-config/blob/master/General/notify_device.yaml
+# Uses: https://github.com/tybritten/ical-sensor-homeassistant
 automation:
   - alias: "Birthday: Notify on birthday!"
     trigger: 
@@ -42,7 +43,7 @@ automation:
               {% set birthday.calendars = birthday.calendars + [ ical ] %}
             {% endfor %}
             {{ birthday.calendars }}
-          # Looks data in «Description» of the calendar
+          # Looks in «Description» of the calendar
           # Phone = phonenumber
           # Born = birthyear
           # Lang = language

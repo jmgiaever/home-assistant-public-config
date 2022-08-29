@@ -23,6 +23,7 @@ calendar:
             all_day: true
 
 # Require: https://github.com/jmgiaever/home-assistant-public-config/blob/master/General/notify_device.yaml
+# Uses: https://github.com/tybritten/ical-sensor-homeassistant
 automation:
   - id: "trash_collection_glass_metal"
     alias: "Trash collection: Glass and metal"
