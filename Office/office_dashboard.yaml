@@ -1,0 +1,14 @@
+# Require: https://github.com/jmgiaever/home-assistant-blueprints/blob/master/automation/cast_lovelace_on_motion.yaml
+automation:
+  - id: 'office_dashboard'
+    alias: "Office: Cast lovelace on motion detection"
+    description: ''
+    use_blueprint:
+      path: cast_lovelace_on_motion.yaml
+      input:
+        trigger_sensors:
+        - binary_sensor.office_motion_sensor_home_security_motion_detection
+        media_devices:
+        - media_player.office_display
+        dashboard_path: lovelace
+        dashboard_view: home #"{{ 'kitchen' if is_state('input_boolean.kitchen_dashboard', 'on') else 'home' }}"

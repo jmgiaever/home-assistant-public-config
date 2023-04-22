@@ -1,0 +1,41 @@
+switch:
+  - platform: group
+    name: "Entrance: Porch light"
+    entities:
+      - switch.entrance_porch_light_1
+      - switch.entrance_porch_light_4
+
+
+light:
+  - platform: template
+    lights:
+      entrance_porch_light:
+        friendly_name: "Entrance: Porch light"
+        turn_on:
+          service: switch.turn_on
+          entity_id: switch.entrance_porch_light
+        turn_off:
+          service: switch.turn_off
+          entity_id: switch.entrance_porch_light
+        value_template: >-
+          {{ false if is_state('switch.entrance_porch_light', 'unknown') else states('switch.entrance_porch_light') }}
+        availability_template: >-
+          {{ not is_state('switch.entrance_porch_light', 'unavailable') }}
+
+automation:
+  - id: entrance_switch_on_off_porch_light
+    alias: "Entrance: Switch on/off porch light"
+    trigger:
+      - platform: state
+        entity_id: sensor.period_of_day
+      - platform: homeassistant
+        event: start
+    action:
+      - wait_template: "{{ not is_state('light.entrance_porch_light', 'unavailable') }}"
+      - if: "{{ is_state('sensor.period_of_day', 'day') }}"
+        then:
+          service: light.turn_off
+          entity_id: light.entrance_porch_light
+        else:
+          service: light.turn_on
+          entity_id: light.entrance_porch_light

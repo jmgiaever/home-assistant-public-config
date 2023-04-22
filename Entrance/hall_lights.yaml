@@ -1,0 +1,31 @@
+automation:
+  - id: hall_light_react
+    alias:  "Entrance - Hall: Turn on ceiling lights"
+    trigger: 
+      platform: event
+      event_type: zwave_js_value_notification
+      event_data:
+        domain: zwave_js
+        node_id: 226
+    action:
+      service: system_log.write
+      data:
+        message: "This is it! Here's trigger {{ trigger.event.data }} {{ area_entities(device_attr(trigger.event.data.device_id, 'area_id'))|selectattr('domain','in','light')|list }}"
+        level: warning
+      # service: "light.{{ 'turn_off' if trigger.event.data.value_raw else 'turn_on' }}"
+      # entity_id: >-
+      #   {{ area_entities(device_attr(trigger.event.data.device_id, 'area_id'))|expand|selectattr('domain', 'eq', 'light')|list }}
+  - id: 'entrance_hall_motion_active_lights'
+    alias: 'Entrance - Hall: Motion active lights'
+    use_blueprint:
+      path: motion_detected_lights.yaml
+      input:
+        trigger_sensors:
+          - binary_sensor.entrance_motion_sensor_home_security_motion_detection
+          - binary_sensor.entrance_door_sensor_access_control_window_door_is_open
+        synced_lights:
+          - light.entrance_ceiling_lights
+        after_wait_actions:
+          - wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
+        wait_actions_before_dim: []
+        delay: 1
