@@ -10,6 +10,7 @@ automation:
         - binary_sensor.guest_room_motion_sensor_home_security_motion_detection
         - binary_sensor.guest_bathroom_motion_sensor_home_security_motion_detection
         media_devices:
-        - media_player.guest_room_display
+        - media_player.guest_room_left_display
+        - media_player.guest_room_right_display
         dashboard_path: lovelace
         dashboard_view: guest-bedroom

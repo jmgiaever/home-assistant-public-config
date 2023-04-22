@@ -10,12 +10,12 @@ automation:
         synced_lights:
           - light.living_room_chandelier_light
           - light.living_room_piano_light
-        illuminance_sensors:
-          - sensor.living_room_motion_sensor_illuminance
-        illuminance_threshold: 10
+        #illuminance_sensors:
+        #  - sensor.living_room_motion_sensor_illuminance
+        #illuminance_threshold: 10
         after_wait_actions:
           - wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
+        wait_actions_before_dim:
           # Our living rooms are «open» between. Wait until motion in both are off to turn off the lights
-          - wait_template: "{{ is_state('binary_sensor.inner_living_room_motion_sensor_home_security_motion_detection', 'off') }}"
-        wait_actions_before_dim: false
+          - wait_template: "{{ is_state_attr('automation.inner_living_room_motion_active_lights', 'current', 0) }}"
         delay: 15

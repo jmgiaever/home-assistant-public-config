@@ -7,14 +7,15 @@ automation:
       input:
         trigger_sensors:
           - binary_sensor.inner_living_room_motion_sensor_home_security_motion_detection
+          #- binary_sensor.test_on_off_bool
         synced_lights:
           - light.inner_living_room_chandelier_light
-        illuminance_sensors:
-          - sensor.inner_living_room_motion_sensor_illuminance
-        illuminance_threshold: 10
+        #illuminance_sensors:
+        #  - sensor.inner_living_room_motion_sensor_illuminance
+        #illuminance_threshold: 10
         after_wait_actions:
           - wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
           # Our living rooms are «open» between. Wait until motion in both are off to turn off the lights
-          - wait_template: "{{ is_state('binary_sensor.living_room_motion_sensor_home_security_motion_detection', 'off') }}"
-        wait_actions_before_dim: false
+          # - wait_template: "{{ is_state_attr('automation.living_room_motion_active_lights', 'current', 0) }}"
+        wait_actions_before_dim: []
         delay: 15

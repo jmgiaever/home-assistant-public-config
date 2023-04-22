@@ -27,6 +27,7 @@ script:
           Respects «Days» too in YAML mode.
         selector:
           duration:
+    mode: parallel
     max: 200
     use_blueprint:
       path: notify_user.yaml

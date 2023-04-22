@@ -25,7 +25,8 @@ script:
 # Require: https://github.com/jmgiaever/home-assistant-public-config/blob/master/General/notify_device.yaml
 # Uses: https://github.com/tybritten/ical-sensor-homeassistant
 automation:
-  - alias: "Birthday: Notify on birthday!"
+  - id: "birthday_notify"
+    alias: "Birthday: Notify on birthdays"
     trigger: 
       - platform: calendar
         event: start
@@ -52,13 +53,14 @@ automation:
           rexp_lang: '.*?lang:?\s*([a-zA-Z\_]+)'
           langs:
             no_nb: '+47' # If no lang, check phone number and set `no_nb` as lang if necessary
-          notify_devices: >-
-            {{ state_attr('group.owners_notify_devices', 'entity_id')|list }}
+          notify_devices: >- #joachims_notify_devices
+            {{ state_attr('group.notify_user_devices', 'entity_id')|list }}
       - repeat: # Loop thorugh all the birthdays
           for_each: "{{ birthdays }}"
           sequence:
             - variables:
                 name: "{{ (states(repeat.item).split('-')[:-1]|join('-')|trim).split(' ')[0]|lower|title }}"
+                full_name: "{{ states(repeat.item).split('-')[:-1]|join('-')|trim }}"
                 details: '{{ state_attr(repeat.item, "description")|striptags }}'
                 phones: >-
                   {{ details|regex_findall(rexp_phone, ignorecase=true) }}
@@ -89,9 +91,9 @@ automation:
                   title: "It is {{ name }}'s birthday. 🎁"
                   message: >-
                     {% if age is not false %}
-                      {{ name }} is turning {{ age }} today.
+                      {{ full_name }} is turning {{ age }} today.
                     {% else %}
-                      {{ name }} is getting one year older today.
+                      {{ full_name }} is getting one year older today.
                     {% endif %}
                     Send your congratulations 🎉 to let him/her
                     know that you appreciate them. 🥳
@@ -102,12 +104,14 @@ automation:
                       - action: DISMISS
                         title: Dismiss 💩
                     color: '#ebb1bb'
+                    persistent: true
                     group: "birthday-notifications"
+                    tag: "birthday-notification-{{ full_name|regex_replace(find='([^a-z]+)', replace='-', ignorecase=true)|lower }}"
                     channel: "Birthdays"
                     importance: high
                     icon_url: /local/icons/notifications/cake.png
                     notification_icon: "mdi:cake"
-                  
+
             - repeat: # Loop through all the devices that will be notified.
                 for_each: "{{ notify_devices }}"
                 sequence:

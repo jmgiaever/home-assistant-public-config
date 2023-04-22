@@ -11,9 +11,9 @@ automation:
           - light.kitchen_counter_lights
           - light.kitchen_dining_table_light
           - light.kitchen_stairway_lights
-        illuminance_sensors:
-          - sensor.kitchen_motion_sensor_illuminance
-        illuminance_threshold: 10
+        #illuminance_sensors:
+        #  - sensor.kitchen_motion_sensor_illuminance
+        #illuminance_threshold: 10
         after_wait_actions:
           - wait_template: "{{ is_state('input_boolean.housekeeping_mode', 'off') }}"
         wait_actions_before_dim: false
