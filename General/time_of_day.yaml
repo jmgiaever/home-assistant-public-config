@@ -1,0 +1,35 @@
+automation:
+  - mode: restart
+    id: "period_of_day_notify"
+    alias: "Period of day: Notify"
+    trigger: 
+      platform: state
+      entity_id:
+        - sensor.period_of_day
+    action: 
+      - service: script.turn_on
+        target:
+          entity_id: script.notify_device
+        data:
+          variables:
+            notify_device: notify.mobile_app_pixel_7_pro
+            data:
+              message: >-
+                It is {{ states(trigger.entity_id) }}. {% if states(trigger.entity_id) not in ['day', 'night'] %} 
+                  {{ state_attr(trigger.entity_id, 'twilight')|title }} twilight
+                {% endif %}
+                {% if state_attr(trigger.entity_id, 'dusk_dawn') != false %} 
+                  {{ state_attr(trigger.entity_id, 'dusk_dawn')|title }} dusk
+                {% endif %}
+              data:
+                notification_icon: "{{ state_attr(trigger.entity_id, 'icon') }}"
+                color: '#ebb1bb'
+                actions:
+                  - action: DISMISS_PERIOD_OF_DAY
+                    title: "Dismiss"
+                channel: "Tests"
+                group: "period-of-day"
+                tag: "period-of-day"
+                timeout: "{{ 60 * 2 }}"
+                persistent: true
+                importance: high
