@@ -15,12 +15,14 @@ template:
             ) - timedelta(hours=6)
           }}
         attributes:
-          from_sensor: "{{ trigger.entity_id }}"
+          source_sensor: "{{ trigger.entity_id }}"
           start_time: "{{ state_attr(trigger.entity_id, 'start_time') }}"
 
 automation:
   - id: "trash_collection_glass_metal"
     alias: "Trash collection: Glass and metal"
+    trigger_variables:
+      entity_id: "sensor.kirkegardsvegen_14_glass_metallemballasje"
     trigger:
       platform: time
       at: sensor.kirkegardsvegen_14_glass_metallemballasje
@@ -29,8 +31,7 @@ automation:
           notify_devices: >-
             {{ state_attr('group.notify_user_devices', 'entity_id')|default([])|list }}
           # Set the default, so we can trigger it manually....
-          entity_id: "{{ trigger.entity_id|default('sensor.template_kirkegardsvegen_14_glass_metallemballasje') }}"
-          binary_sensor: "{{ state_attr(entity_id, 'from_sensor') }}"
+          binary_sensor: "{{ state_attr(entity_id, 'source_sensor') }}"
           date: >-
             {{ states(entity_id) }}
       - service: system_log.write
@@ -38,7 +39,7 @@ automation:
           level: warning
           message: >-
             Trigger:{{ trigger }}\n
-            Entity_id: {{entity_id}}, state: {{ states(entity_id)}}
+            Entity_id: {{ entity_id }}, state: {{ states(entity_id)}}
       - repeat:
           for_each: "{{ notify_devices }}"
           sequence:
